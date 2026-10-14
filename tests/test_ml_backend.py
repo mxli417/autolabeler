@@ -35,6 +35,7 @@ class FakeModel:
 def test_retrieval_redacts_before_model(monkeypatch):
     monkeypatch.setenv("PRESIDIO_ENABLED", "true")
     monkeypatch.setenv("MODEL_SEND_PII", "false")
+    monkeypatch.setenv("MODEL_SEND_IMAGES", "false")
     model = FakeModel()
     predictor = Predictor(Settings(), presidio=FakePresidio(), model=model)
     result = predictor.predict_task(
@@ -52,9 +53,9 @@ def test_retrieval_redacts_before_model(monkeypatch):
     assert result["result"][0]["value"]["choices"] == ["relevant"]
 
 
-def test_multimodal_images_require_explicit_opt_in(monkeypatch):
+def test_multimodal_images_are_forwarded_by_default(monkeypatch):
     monkeypatch.setenv("PRESIDIO_ENABLED", "false")
-    monkeypatch.setenv("MODEL_SEND_IMAGES", "true")
+    monkeypatch.delenv("MODEL_SEND_IMAGES", raising=False)
     model = FakeModel()
     predictor = Predictor(Settings(), presidio=FakePresidio(), model=model)
 

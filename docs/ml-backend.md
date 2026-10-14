@@ -31,15 +31,14 @@ LiteLLM is not a Python dependency of this service. It is an optional gateway th
 
 ## Configure a provider
 
-Copy `.env.example` to `.env`. For direct OpenAI access:
+Copy `.env.example` to `.env`. Direct OpenAI access needs only:
 
 ```dotenv
-MODEL_ENABLED=true
-MODEL_PROVIDER=openai
-MODEL_BASE_URL=
-MODEL_NAME=<multimodal-openai-model-or-snapshot>
-OPENAI_API_KEY=<project-key>
+MODEL_API_KEY=<project-key>
+MODEL_BASE_URL=https://api.openai.com/v1
 ```
+
+Providing the key enables inference automatically. The default model is `gpt-6-luna`, and image forwarding is enabled for quick multimodal tests. Set `MODEL_NAME` or `MODEL_SEND_IMAGES=false` when you need different behavior.
 
 For a LiteLLM proxy:
 
@@ -78,7 +77,7 @@ Use `label_studio/multimodal_retrieval.xml` and import tasks shaped like this:
 
 `image` accepts one URL. `images` accepts a list; both may be present, duplicates are removed, and `MODEL_MAX_IMAGES` caps the request. A value may also be `{"image_url": "..."}`. OpenAI supports fully qualified image URLs and base64 data URLs. A cloud model cannot reach Label Studio's container-local upload path, so provide an externally reachable URL or a data URL. The backend does not download or transform images.
 
-Enable forwarding explicitly:
+Image forwarding is enabled in the quick-test defaults. Its advanced settings are:
 
 ```dotenv
 MODEL_SEND_IMAGES=true
@@ -92,16 +91,16 @@ Supported detail values are `auto`, `low`, `high`, and `original`; actual suppor
 
 Presidio analyzes the original `text` field. For PII tasks, its offsets become Label Studio regions against that original string. The analyzer result is then sent to Presidio Anonymizer with the `replace` operator. Retrieval inference receives redacted text by default; set `MODEL_SEND_PII=true` only when policy permits sending the original text. `PII_FAIL_CLOSED=true` stops inference if Presidio is unavailable.
 
-Image pixels do not pass through Presidio. `MODEL_SEND_IMAGES=false` is therefore the default. Before enabling it, remove or mask visual PII with a document-image redaction step and test the output. OCR plus Presidio can locate candidate text, but irreversible visual redaction also needs page coordinates and rendered-image masking. Presidio remains probabilistic, so evaluate custom recognizers for languages and identifiers in your documents.
+Image pixels do not pass through Presidio. The lean OpenAI smoke-test configuration forwards images, so set `MODEL_SEND_IMAGES=false` before working with unredacted sensitive scans. Remove or mask visual PII with a document-image redaction step and test the output. OCR plus Presidio can locate candidate text, but irreversible visual redaction also needs page coordinates and rendered-image masking. Presidio remains probabilistic, so evaluate custom recognizers for languages and identifiers in your documents.
 
 ## Environment reference
 
 | Variable | Purpose | Default |
 |---|---|---|
-| `MODEL_ENABLED` | Permit model calls | `false` |
+| `MODEL_ENABLED` | Permit model calls; `auto` enables them when a key exists | `auto` |
 | `MODEL_PROVIDER` | `openai` or `litellm` | `openai` |
 | `MODEL_BASE_URL` | Override the selected provider's API root | provider default |
-| `MODEL_NAME` | OpenAI model ID or LiteLLM model alias | required when enabled |
+| `MODEL_NAME` | OpenAI model ID or LiteLLM model alias | `gpt-6-luna` |
 | `OPENAI_API_KEY` | Direct OpenAI project key | empty |
 | `LITELLM_API_KEY` | LiteLLM proxy or virtual key | empty |
 | `MODEL_API_KEY` | Provider-neutral override for either key | empty |
@@ -109,7 +108,7 @@ Image pixels do not pass through Presidio. `MODEL_SEND_IMAGES=false` is therefor
 | `MODEL_MAX_OUTPUT_TOKENS` | Response token cap | `128` |
 | `MODEL_TEMPERATURE` | Optional sampling temperature | provider default |
 | `MODEL_SEND_PII` | Send original rather than redacted text | `false` |
-| `MODEL_SEND_IMAGES` | Forward task images unchanged | `false` |
+| `MODEL_SEND_IMAGES` | Forward task images unchanged | `true` |
 | `MODEL_IMAGE_DETAIL` | Image preprocessing detail | `auto` |
 | `MODEL_MAX_IMAGES` | Maximum images per request | `4` |
 | `PRESIDIO_ENABLED` | Analyze and redact task text | `true` |

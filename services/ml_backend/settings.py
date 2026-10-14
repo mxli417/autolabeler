@@ -31,19 +31,26 @@ def model_api_key() -> str:
     return os.getenv(key_name, "")
 
 
+def model_enabled() -> bool:
+    value = os.getenv("MODEL_ENABLED", "").strip().casefold()
+    if not value or value == "auto":
+        return bool(model_api_key())
+    return value in {"1", "true", "yes", "on"}
+
+
 @dataclass(frozen=True)
 class Settings:
     model_version: str = field(default_factory=lambda: os.getenv("MODEL_VERSION", "multimodal-responses-presidio-v1"))
-    model_enabled: bool = field(default_factory=lambda: env_bool("MODEL_ENABLED", False))
+    model_enabled: bool = field(default_factory=model_enabled)
     model_provider: str = field(default_factory=model_provider)
     model_base_url: str = field(default_factory=model_base_url)
     model_api_key: str = field(default_factory=model_api_key)
-    model_name: str = field(default_factory=lambda: os.getenv("MODEL_NAME", ""))
+    model_name: str = field(default_factory=lambda: os.getenv("MODEL_NAME", "").strip() or "gpt-6-luna")
     model_timeout_seconds: float = field(default_factory=lambda: float(os.getenv("MODEL_TIMEOUT_SECONDS", "20")))
     model_max_output_tokens: int = field(default_factory=lambda: int(os.getenv("MODEL_MAX_OUTPUT_TOKENS", "128")))
     model_temperature: float | None = field(default_factory=lambda: env_optional_float("MODEL_TEMPERATURE"))
     model_send_pii: bool = field(default_factory=lambda: env_bool("MODEL_SEND_PII", False))
-    model_send_images: bool = field(default_factory=lambda: env_bool("MODEL_SEND_IMAGES", False))
+    model_send_images: bool = field(default_factory=lambda: env_bool("MODEL_SEND_IMAGES", True))
     model_image_detail: str = field(default_factory=lambda: os.getenv("MODEL_IMAGE_DETAIL", "auto").casefold())
     model_max_images: int = field(default_factory=lambda: int(os.getenv("MODEL_MAX_IMAGES", "4")))
     presidio_enabled: bool = field(default_factory=lambda: env_bool("PRESIDIO_ENABLED", True))

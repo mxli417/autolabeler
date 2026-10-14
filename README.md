@@ -8,12 +8,13 @@ A lean, local workflow for turning long PDFs into small Label Studio tasks and m
 uv sync --extra dev
 uv run autolabeler demo
 Copy-Item .env.example .env
+# Edit .env and paste MODEL_API_KEY; the OpenAI base URL is prefilled.
 docker compose up --build -d
 ```
 
 Open <http://localhost:8080>, create a project with one of the configs in `label_studio/`, and import `workspace/tasks.json`. After two or more people label the same overlap set, export JSON and run:
 
-In the project, open **Settings → Model → Connect Model** and use `http://ml-backend:9090`. The backend uses the multimodal Responses API through the official OpenAI SDK. Set `MODEL_ENABLED=true`, `MODEL_NAME`, and `OPENAI_API_KEY` for OpenAI. Set `MODEL_PROVIDER=litellm`, `MODEL_BASE_URL`, and `LITELLM_API_KEY` to route the same request through LiteLLM. Image inputs require `MODEL_SEND_IMAGES=true`; see [the backend guide](docs/ml-backend.md).
+In the project, open **Settings → Model → Connect Model** and use `http://ml-backend:9090`. The backend uses the multimodal Responses API through the official OpenAI SDK. For the default OpenAI path, `.env` needs only `MODEL_API_KEY` and `MODEL_BASE_URL`; the key enables inference automatically and the default model is `gpt-6-luna`. See [the backend guide](docs/ml-backend.md) for LiteLLM and advanced overrides.
 
 ```bash
 uv run autolabeler iaa export.json --out workspace/iaa.json

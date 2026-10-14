@@ -19,6 +19,20 @@ class FakeOpenAI:
         self.responses = FakeResponses()
 
 
+def test_model_api_key_is_enough_for_openai_defaults(monkeypatch):
+    monkeypatch.setenv("MODEL_API_KEY", "test-key")
+    monkeypatch.setenv("MODEL_BASE_URL", "https://api.openai.com/v1")
+    monkeypatch.delenv("MODEL_ENABLED", raising=False)
+    monkeypatch.delenv("MODEL_NAME", raising=False)
+    monkeypatch.delenv("MODEL_SEND_IMAGES", raising=False)
+
+    settings = Settings()
+
+    assert settings.model_enabled is True
+    assert settings.model_name == "gpt-6-luna"
+    assert settings.model_send_images is True
+
+
 def test_calls_multimodal_responses_api_through_litellm(monkeypatch):
     monkeypatch.setenv("MODEL_ENABLED", "true")
     monkeypatch.setenv("MODEL_PROVIDER", "litellm")
