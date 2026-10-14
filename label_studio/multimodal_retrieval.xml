@@ -1,0 +1,16 @@
+<View>
+  <Header value="Question"/>
+  <Text name="question" value="$question"/>
+  <Header value="Candidate text"/>
+  <Text name="candidate" value="$text"/>
+  <Header value="Candidate image"/>
+  <Image name="image" value="$image" zoom="true"/>
+  <Choices name="relevance" toName="candidate" choice="single" required="true">
+    <Choice value="relevant"/>
+    <Choice value="irrelevant"/>
+    <Choice value="uncertain"/>
+    <Choice value="candidate_miss"/>
+    <Choice value="evidence_absent_after_audit"/>
+  </Choices>
+  <TextArea name="notes" toName="candidate" placeholder="Audit trail or ambiguity"/>
+</View>

@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "document-eval-workbench"
+version = "0.1.0"
+description = "Lean PDF-to-Label-Studio evaluation workbench"
+readme = "README.md"
+requires-python = ">=3.11,<3.15"
+dependencies = [
+  "pypdf==6.20.1",
+]
+
+[project.optional-dependencies]
+api = ["fastapi==0.143.0", "uvicorn==0.37.0"]
+backend = ["openai==3.29.0"]
+notebooks = ["jupyterlab==4.4.9", "matplotlib==3.10.7", "pandas==2.3.3"]
+fixture = ["reportlab==4.4.4"]
+dev = [
+  # 4.6+ requires Git 2.31; this workspace currently uses Git 2.29.
+  "pre-commit==4.5.1",
+  "pytest==8.4.2",
+  "reportlab==4.4.4",
+  "ruff==0.17.0",
+]
+
+[project.scripts]
+autolabeler = "autolabeler.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/autolabeler"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+extend-exclude = [".pre-commit-cache", "notebooks"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B"]

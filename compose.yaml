@@ -1,0 +1,81 @@
+services:
+  label-studio:
+    image: heartexlabs/label-studio:1.21.0
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - label_studio_data:/label-studio/data
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8080/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      - ml-backend
+
+  ml-backend:
+    image: autolabeler-ml-backend:local
+    build: ./services/ml_backend
+    ports:
+      - "127.0.0.1:9090:9090"
+    environment:
+      MODEL_VERSION: ${MODEL_VERSION:-multimodal-responses-presidio-v1}
+      MODEL_ENABLED: ${MODEL_ENABLED:-false}
+      MODEL_PROVIDER: ${MODEL_PROVIDER:-openai}
+      MODEL_BASE_URL: ${MODEL_BASE_URL:-}
+      MODEL_API_KEY: ${MODEL_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LITELLM_API_KEY: ${LITELLM_API_KEY:-}
+      MODEL_NAME: ${MODEL_NAME:-}
+      MODEL_TIMEOUT_SECONDS: ${MODEL_TIMEOUT_SECONDS:-20}
+      MODEL_MAX_OUTPUT_TOKENS: ${MODEL_MAX_OUTPUT_TOKENS:-128}
+      MODEL_TEMPERATURE: ${MODEL_TEMPERATURE:-}
+      MODEL_SEND_PII: ${MODEL_SEND_PII:-false}
+      MODEL_SEND_IMAGES: ${MODEL_SEND_IMAGES:-false}
+      MODEL_IMAGE_DETAIL: ${MODEL_IMAGE_DETAIL:-auto}
+      MODEL_MAX_IMAGES: ${MODEL_MAX_IMAGES:-4}
+      PRESIDIO_ENABLED: ${PRESIDIO_ENABLED:-true}
+      PRESIDIO_ANALYZER_URL: http://presidio-analyzer:3000
+      PRESIDIO_ANONYMIZER_URL: http://presidio-anonymizer:3000
+      PRESIDIO_LANGUAGE: ${PRESIDIO_LANGUAGE:-en}
+      PRESIDIO_SCORE_THRESHOLD: ${PRESIDIO_SCORE_THRESHOLD:-0.5}
+      PRESIDIO_TIMEOUT_SECONDS: ${PRESIDIO_TIMEOUT_SECONDS:-10}
+      PII_FAIL_CLOSED: ${PII_FAIL_CLOSED:-true}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - presidio-analyzer
+      - presidio-anonymizer
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:9090/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  presidio-analyzer:
+    image: ghcr.io/data-privacy-stack/presidio-analyzer:2.2.364
+    expose:
+      - "3000"
+
+  presidio-anonymizer:
+    image: ghcr.io/data-privacy-stack/presidio-anonymizer:2.2.364
+    expose:
+      - "3000"
+
+  workbench:
+    image: autolabeler-workbench:local
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      WORKBENCH_ROOT: /workbench
+    volumes:
+      - ./:/workbench
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  label_studio_data: {}

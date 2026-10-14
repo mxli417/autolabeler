@@ -1,0 +1,17 @@
+<View>
+  <Header value="Question"/>
+  <Text name="question" value="$question"/>
+  <Header value="Candidate: page $page · BM25 rank $rank"/>
+  <Text name="candidate" value="$text"/>
+  <Choices name="relevance" toName="candidate" choice="single" required="true">
+    <Choice value="relevant"/>
+    <Choice value="irrelevant"/>
+    <Choice value="uncertain"/>
+    <Choice value="candidate_miss"/>
+    <Choice value="evidence_absent_after_audit"/>
+  </Choices>
+  <Labels name="evidence" toName="candidate">
+    <Label value="evidence" background="#2F80ED"/>
+  </Labels>
+  <TextArea name="notes" toName="candidate" placeholder="Audit trail or ambiguity"/>
+</View>

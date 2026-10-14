@@ -1,0 +1,10 @@
+<View>
+  <Header value="$field"/>
+  <Text name="source" value="$text"/>
+  <Labels name="evidence" toName="source"><Label value="field_evidence" background="#27AE60"/></Labels>
+  <TextArea name="value" toName="source" placeholder="Extracted value"/>
+  <TextArea name="normalized_value" toName="source" placeholder="Normalized value"/>
+  <Choices name="status" toName="source" choice="single" required="true">
+    <Choice value="found"/><Choice value="not_found"/><Choice value="ambiguous"/>
+  </Choices>
+</View>

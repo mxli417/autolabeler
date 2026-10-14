@@ -1,0 +1,11 @@
+<View>
+  <Text name="source" value="$text"/>
+  <Labels name="pii" toName="source">
+    <Label value="PERSON" background="#EB5757"/><Label value="EMAIL" background="#F2994A"/>
+    <Label value="PHONE" background="#F2C94C"/><Label value="ADDRESS" background="#9B51E0"/>
+    <Label value="ID" background="#56CCF2"/><Label value="OTHER" background="#828282"/>
+  </Labels>
+  <Choices name="redaction" toName="source" choice="single" required="true">
+    <Choice value="required"/><Choice value="not_required"/><Choice value="uncertain"/>
+  </Choices>
+</View>

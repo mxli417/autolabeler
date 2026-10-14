@@ -1,0 +1,2 @@
+label-studio-ml @ https://github.com/HumanSignal/label-studio-ml-backend/archive/7b0d01f3593e327ad9cd2a92dbd08aa89f6403f4.zip
+openai==3.29.0

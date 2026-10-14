@@ -1,0 +1,37 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-json
+        exclude: ^notebooks/
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.0
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.9.1
+    hooks:
+      - id: nbstripout
+  - repo: local
+    hooks:
+      - id: tests
+        name: focused unit tests
+        entry: uv run pytest -q
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: trivy
+        name: Trivy container and Docker configuration scan
+        entry: pwsh -NoProfile -File scripts/security-scan.ps1
+        language: system
+        pass_filenames: false
+        stages: [manual]

@@ -211,6 +211,13 @@ tempCodeRunnerFile.py
 # PyPI configuration file
 .pypirc
 
+# Workbench artifacts
+.pre-commit-cache/
+workspace/
+data/*
+!data/.gitkeep
+label-studio-data/
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
